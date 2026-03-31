@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 )
 
 type GreetingResponse struct {
@@ -19,8 +20,13 @@ func main() {
 
 	handler := corsMiddleware(mux)
 
-	log.Println("birthday api running on http://localhost:8080")
-	if err := http.ListenAndServe(":8080", handler); err != nil {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Printf("birthday api running on :%s\n", port)
+	if err := http.ListenAndServe(":"+port, handler); err != nil {
 		log.Fatal(err)
 	}
 }
