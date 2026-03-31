@@ -77,7 +77,7 @@ export default function HomePage() {
           className="relative"
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/50 px-4 py-2 text-sm backdrop-blur-md">
-            <span className="inline-block h-2.5 w-2.5 animate-twinkle rounded-full bg-violet-500" />
+            <span className="inline-block h-2.5 w-2.5 animate-twinkle rounded-full bg-rose-500" />
             To Ratcha
           </div>
 
@@ -148,7 +148,7 @@ export default function HomePage() {
               onClick={() => setShowBouquet((prev) => !prev)}
               className="mx-auto mb-6 block rounded-full bg-[--color-midnight] px-6 py-3 font-semibold text-black shadow-[--shadow-bloom] cursor-pointer"
             >
-              {showBouquet ? "ซ่อนช่อดอกแคสเปีย" : "กดเพื่อแสดงช่อดอกแคสเปีย"}
+              {showBouquet ? "Hide" : "Press here gently"}
             </motion.button>
 
             <AnimatePresence>
@@ -170,7 +170,7 @@ export default function HomePage() {
                   Wish Note
                 </div>
                 <p className="mt-3 text-base leading-7 text-[--color-midnight]/80">
-                  สุขสันต์วันเกิดนะ ขอให้ทุกวันหลังจากนี้มีแต่เรื่องดี ๆ คนดี ๆ
+                  สุขสันต์วันเกิดนะบิ้ว ขอให้ทุกวันหลังจากนี้มีแต่เรื่องดี ๆ คนดี ๆ
                   และความฝันที่ค่อย ๆ ผลิบานเหมือนดอกแคสเปียในช่อนี้
                 </p>
                 <div className="mt-4 text-sm font-semibold">

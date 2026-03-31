@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Birthday Blossom",
-  description: "Animated birthday greeting website with caspia bouquet",
+  description: "For Ratcha, with all my heart",
 };
 
 export default function RootLayout({

@@ -39,8 +39,8 @@ func greetingHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := GreetingResponse{
 		Title:     "Happy Birthday, My Favorite Person",
-		Message:   "ขอให้วันเกิดปีนี้อบอุ่น สดใส และเต็มไปด้วยความสุขในทุกช่วงเวลา อย่าได้มีสักวันเลยที่ต้องอยู่อย่างทุกข์ใจ เหมือนช่อดอกแคสเปียที่พลิ้วไหวเบา ๆ แต่ทำให้ทั้งวันดูละมุนขึ้นทันที",
-		Signature: "With all my heart, Love you always",
+		Message:   "ขอให้วันเกิดปีที่33นี้อบอุ่น สดใส และเต็มไปด้วยความสุขในทุกช่วงเวลา อย่าได้มีสักวันเลยที่ต้องอยู่อย่างทุกข์ใจ เหมือนช่อดอกแคสเปียที่พลิ้วไหวเบา ๆ แต่ทำให้ทั้งวันดูละมุนขึ้นทันที",
+		Signature: "With all my heart, love you always",
 		Accent:    "ช่อดอกแคสเปียสีม่วงพาสเทล",
 	}
 
