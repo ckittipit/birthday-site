@@ -175,6 +175,9 @@ export default function HomePage() {
                   } catch (error) {
                     console.error(error);
                   }
+                } else if (audio && isPlaying) {
+                  audio.pause();
+                  setIsPlaying(false);
                 }
               }}
               className="mx-auto mb-6 block rounded-full bg-[--color-midnight] px-6 py-3 font-semibold text-black shadow-[--shadow-bloom] cursor-pointer"
