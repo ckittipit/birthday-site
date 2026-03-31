@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef,  useState } from "react";
 import CaspiaBouquet from "@/app/components/CaspiaBouquet";
 
 type GreetingResponse = {
@@ -23,6 +23,25 @@ export default function HomePage() {
   const [data, setData] = useState<GreetingResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [showBouquet, setShowBouquet] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const toggleMusic = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    try {
+      if (isPlaying) {
+        audio.pause();
+        setIsPlaying(false);
+      } else {
+        await audio.play();
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      console.error("Unable to play audio:", error);
+    }
+  };
 
   useEffect(() => {
     const loadGreeting = async () => {
@@ -145,7 +164,19 @@ export default function HomePage() {
             <motion.button
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => setShowBouquet((prev) => !prev)}
+              onClick={async () => {
+                setShowBouquet((prev) => !prev);
+
+                const audio = audioRef.current;
+                if (audio && !isPlaying) {
+                  try {
+                    await audio.play();
+                    setIsPlaying(true);
+                  } catch (error) {
+                    console.error(error);
+                  }
+                }
+              }}
               className="mx-auto mb-6 block rounded-full bg-[--color-midnight] px-6 py-3 font-semibold text-black shadow-[--shadow-bloom] cursor-pointer"
             >
               {showBouquet ? "Hide" : "Press here gently"}
@@ -182,6 +213,9 @@ export default function HomePage() {
           </div>
         </motion.section>
       </div>
+      <audio ref={audioRef} loop preload="auto">
+        <source src="/dieWithASmile.mp3" type="audio/mpeg" />
+      </audio>
 
       {/* <section className="mx-auto mt-8 max-w-5xl rounded-[2rem] border border-white/40 bg-white/25 p-8 shadow-[--shadow-bloom] backdrop-blur-md">
         <div className="grid gap-8 md:grid-cols-2">
