@@ -183,7 +183,7 @@ export default function HomePage() {
         </motion.section>
       </div>
 
-      <section className="mx-auto mt-8 max-w-5xl rounded-[2rem] border border-white/40 bg-white/25 p-8 shadow-[--shadow-bloom] backdrop-blur-md">
+      {/* <section className="mx-auto mt-8 max-w-5xl rounded-[2rem] border border-white/40 bg-white/25 p-8 shadow-[--shadow-bloom] backdrop-blur-md">
         <div className="grid gap-8 md:grid-cols-2">
           <div>
             <div className="text-sm font-bold uppercase tracking-[0.25em] text-[--color-plum]">
@@ -215,7 +215,7 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
     </main>
   );
 }
