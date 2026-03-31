@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+/* ===== Theme (แทน tailwind.config.ts) ===== */
+@theme {
+  --color-blush: #ffd6e7;
+  --color-lilac: #cab8ff;
+  --color-plum: #7f56d9;
+  --color-midnight: #241b3a;
+
+  --shadow-bloom: 0 18px 60px rgba(109, 40, 217, 0.2);
+}
+
+/* ===== Custom Animations ===== */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes drift {
+  0% {
+    transform: translate3d(0,-10vh,0) rotate(0deg);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  100% {
+    transform: translate3d(12vw,105vh,0) rotate(220deg);
+    opacity: 0;
+  }
+}
+
+@keyframes sway {
+  0%,100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+/* ===== Utility classes ===== */
+@utility animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@utility animate-twinkle {
+  animation: twinkle 2.5s ease-in-out infinite;
+}
+
+@utility animate-drift {
+  animation: drift 16s linear infinite;
+}
+
+@utility animate-sway {
+  animation: sway 3.6s ease-in-out infinite;
+}
+
+/* ===== Base ===== */
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button {
+  cursor: pointer;
+}
