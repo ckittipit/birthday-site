@@ -27,10 +27,10 @@ export default function MiniSlideshow() {
         <div className="relative mx-auto mt-10 flex w-fit justify-center">
             <div className="rounded-2xl border border-white/50 bg-white/30 p-2 shadow-[--shadow-bloom] backdrop-blur-md">
                 <div className="mb-2 px-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[--color-plum]">
-                    Memories
+                    Less memories, but countless feelings.
                 </div>
 
-                <div className="relative h-28 w-28 overflow-hidden rounded-xl sm:h-32 sm:w-32">
+                <div className="relative h-60 w-full overflow-hidden rounded-xl sm:h-60 sm:w-full">
                     <AnimatePresence mode="wait">
                         <motion.img
                         key={images[currentIndex]}
