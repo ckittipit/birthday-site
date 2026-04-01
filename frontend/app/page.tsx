@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef,  useState } from "react";
 import CaspiaBouquet from "@/app/components/CaspiaBouquet";
+import MiniSlideshow from "@/app/components/MiniSlideshow";
 
 type GreetingResponse = {
   title: string;
@@ -68,6 +69,12 @@ export default function HomePage() {
     };
 
     void loadGreeting();
+  }, []);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = 0.3;
+    }
   }, []);
 
   return (
@@ -215,6 +222,7 @@ export default function HomePage() {
             
           </div>
         </motion.section>
+        <MiniSlideshow />
       </div>
       <audio ref={audioRef} loop preload="auto">
         <source src="/dieWithASmile.mp3" type="audio/mpeg" />
