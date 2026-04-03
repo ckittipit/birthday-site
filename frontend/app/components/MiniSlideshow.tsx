@@ -36,7 +36,7 @@ export default function MiniSlideshow() {
                         key={images[currentIndex]}
                         src={images[currentIndex]}
                         alt={`memory-${currentIndex + 1}`}
-                        initial={{ opacity: 0, scale: 1.06 }}
+                        initial={{ opacity: 0, scale: 1.6 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.96 }}
                         transition={{ duration: 0.5, ease: "easeOut" }}

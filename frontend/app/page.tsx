@@ -211,18 +211,18 @@ export default function HomePage() {
                   Wish Note
                 </div>
                 <p className="mt-3 text-base leading-7 text-[--color-midnight]/80">
-                  สุขสันต์วันเกิดนะบิ้ว ขอให้ทุกวันหลังจากนี้มีแต่เรื่องดี ๆ คนดี ๆ
+                  สุขสันต์วันเกิดนะบิ้วคนเก่ง ขอให้ทุกวันหลังจากนี้มีแต่เรื่องดี ๆ คนดี ๆ
                   และความฝันที่ค่อย ๆ ผลิบานเหมือนดอกแคสเปียในช่อนี้
                 </p>
                 <div className="mt-4 text-sm font-semibold">
                   — {data?.signature ?? "Your secret admirer"}
                 </div>
+                <MiniSlideshow />
               </div>
             )}
             
           </div>
         </motion.section>
-        <MiniSlideshow />
       </div>
       <audio ref={audioRef} loop preload="auto">
         <source src="/dieWithASmile.mp3" type="audio/mpeg" />
