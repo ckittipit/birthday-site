@@ -92,18 +92,15 @@ export default function HomePage() {
 		const name = wishName.trim()
 		const message = wishMessage.trim()
 
-		if (!name || !message) {
-			setSubmitStatus('กรุณาเขียนคำอวยพร')
-			return
-		}
+		// if (!name || !message) {
+		// 	setSubmitStatus('กรุณากรอกชื่อและคำอวยพรให้ครบ')
+		// 	return
+		// }
 
 		try {
 			setIsSubmitting(true)
 
-			const apiBaseUrl =
-				process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080'
-
-			const response = await fetch(`${apiBaseUrl}/api/wishes`, {
+			const response = await fetch(`${apiBaseUrl}/api/send-wish`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -118,10 +115,10 @@ export default function HomePage() {
 
 			setWishName('')
 			setWishMessage('')
-			setSubmitStatus('บันทึกคำอวยพรเรียบร้อยแล้ว 💖')
+			setSubmitStatus('ส่งคำอวยพรเรียบร้อยแล้ว')
 		} catch (error) {
 			console.error(error)
-			setSubmitStatus('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง')
+			setSubmitStatus('ส่งไม่สำเร็จ ลองใหม่อีกครั้ง')
 		} finally {
 			setIsSubmitting(false)
 		}
