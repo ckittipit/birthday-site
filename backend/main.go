@@ -1,17 +1,16 @@
 package main
 
 import (
-	"context"
-	"database/sql"
+	// "context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strings"
-	"time"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/resend/resend-go/v2"
 )
 
 type GreetingResponse struct {
@@ -21,43 +20,23 @@ type GreetingResponse struct {
 	Accent    string `json:"accent"`
 }
 
-type CreateWishRequest struct {
+type SendWishRequest struct {
 	Name    string `json:"name"`
 	Message string `json:"message"`
 }
 
-type CreateWishResponse struct {
+type SendWishResponse struct {
 	OK bool `json:"ok"`
 }
 
-var db *sql.DB
-
 func main() {
-	dsn := os.Getenv("DB_DSN")
-	if dsn == "" {
-		log.Fatal("DB_DSN is required")
-	}
-
-	var err error
-	db, err = sql.Open("mysql", dsn)
-	if err != nil {
-		log.Fatalf("open db: %v", err)
-	}
-
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(5)
-	db.SetConnMaxLifetime(5 * time.Minute)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	if err := db.PingContext(ctx); err != nil {
-		log.Fatalf("ping db: %v", err)
-	}
-
 	mux := http.NewServeMux()
+
+	// ของเก่า
 	mux.HandleFunc("/api/greeting", greetingHandler)
-	mux.HandleFunc("/api/wishes", wishesHandler)
+
+	// ของใหม่
+	mux.HandleFunc("/api/send-wish", sendWishHandler)
 
 	handler := corsMiddleware(mux)
 
@@ -71,6 +50,8 @@ func main() {
 		log.Fatal(err)
 	}
 }
+
+// ===== ของเก่า: greeting endpoint =====
 
 func greetingHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
@@ -86,19 +67,22 @@ func greetingHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func wishesHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		createWishHandler(w, r)
-	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-	}
-}
+// ===== ของใหม่: ส่งคำอวยพรเข้าอีเมล =====
 
-func createWishHandler(w http.ResponseWriter, r *http.Request) {
+func sendWishHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	defer r.Body.Close()
 
-	var req CreateWishRequest
+	var req SendWishRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid json body", http.StatusBadRequest)
 		return
@@ -112,25 +96,18 @@ func createWishHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
-	defer cancel()
-
-	_, err := db.ExecContext(
-		ctx,
-		`INSERT INTO birthday_wishes (name, message) VALUES (?, ?)`,
-		req.Name,
-		req.Message,
-	)
-	if err != nil {
-		log.Printf("insert wish: %v", err)
-		http.Error(w, "failed to save wish", http.StatusInternalServerError)
+	if err := sendWishEmail(req); err != nil {
+		log.Printf("send wish email error: %v", err)
+		http.Error(w, "failed to send email", http.StatusInternalServerError)
 		return
 	}
 
-	writeJSON(w, http.StatusCreated, CreateWishResponse{OK: true})
+	writeJSON(w, http.StatusOK, SendWishResponse{
+		OK: true,
+	})
 }
 
-func validateWish(req CreateWishRequest) error {
+func validateWish(req SendWishRequest) error {
 	if req.Name == "" {
 		return errors.New("name is required")
 	}
@@ -140,11 +117,59 @@ func validateWish(req CreateWishRequest) error {
 	if len([]rune(req.Name)) > 100 {
 		return errors.New("name is too long")
 	}
-	if len([]rune(req.Message)) > 1000 {
+	if len([]rune(req.Message)) > 1500 {
 		return errors.New("message is too long")
 	}
 	return nil
 }
+
+func sendWishEmail(req SendWishRequest) error {
+	apiKey := os.Getenv("RESEND_API_KEY")
+	emailFrom := os.Getenv("EMAIL_FROM")
+	emailTo := os.Getenv("EMAIL_TO")
+
+	if apiKey == "" {
+		return errors.New("RESEND_API_KEY is required")
+	}
+	if emailFrom == "" {
+		return errors.New("EMAIL_FROM is required")
+	}
+	if emailTo == "" {
+		return errors.New("EMAIL_TO is required")
+	}
+
+	client := resend.NewClient(apiKey)
+
+	subject := fmt.Sprintf("New Birthday Wish from %s 🎂", req.Name)
+
+	textBody := fmt.Sprintf(
+		"มีคำอวยพรใหม่จากเว็บไซต์\n\nชื่อ: %s\n\nข้อความ:\n%s\n",
+		req.Name,
+		req.Message,
+	)
+
+	htmlBody := fmt.Sprintf(`
+		<div style="font-family:Arial,sans-serif;line-height:1.6;color:#241b3a;">
+			<h2 style="margin-bottom:8px;">มีคำอวยพรใหม่จากเว็บไซต์ 🎉</h2>
+			<p><strong>ชื่อ:</strong> %s</p>
+			<p><strong>ข้อความ:</strong></p>
+			<div style="padding:12px 14px;background:#f8f2ff;border-radius:12px;white-space:pre-wrap;">%s</div>
+		</div>
+	`, escapeHTML(req.Name), escapeHTML(req.Message))
+
+	params := &resend.SendEmailRequest{
+		From:    emailFrom,
+		To:      []string{emailTo},
+		Subject: subject,
+		Text:    textBody,
+		Html:    htmlBody,
+	}
+
+	_, err := client.Emails.Send(params)
+	return err
+}
+
+// ===== ของเก่า: CORS middleware =====
 
 func corsMiddleware(next http.Handler) http.Handler {
 	allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
@@ -166,8 +191,21 @@ func corsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// ===== helper functions =====
+
 func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(v)
+}
+
+func escapeHTML(s string) string {
+	replacer := strings.NewReplacer(
+		"&", "&amp;",
+		"<", "&lt;",
+		">", "&gt;",
+		`"`, "&quot;",
+		"'", "&#39;",
+	)
+	return replacer.Replace(s)
 }
